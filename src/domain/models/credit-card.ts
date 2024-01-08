@@ -1,9 +1,9 @@
 import { UserId } from './user';
 
-export type CreditCardEntryId = string;
+export type CreditCardId = string;
 
-export class CreditCardEntry {
-  private _id: CreditCardEntryId;
+export class CreditCard {
+  private _id: CreditCardId;
   private _userId: UserId;
   private _cardholderName: string;
   private _hashedCardNumber: string;
@@ -12,7 +12,7 @@ export class CreditCardEntry {
   private _description: string;
 
   constructor(
-    id: CreditCardEntryId,
+    id: CreditCardId,
     userId: UserId,
     cardholderName: string,
     hashedCardNumber: string,
@@ -64,7 +64,7 @@ export class CreditCardEntry {
     }
   }
 
-  get id(): CreditCardEntryId {
+  get id(): CreditCardId {
     return this._id;
   }
 
