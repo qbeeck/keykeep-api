@@ -42,7 +42,10 @@ export class UserService {
     email: string,
     passwordToCompare: string,
   ): Promise<User> {
-    const user = await this.userRepository.findOneBy({ email });
+    const user = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'password'],
+    });
 
     const match = this.authService.comparePasswords(
       passwordToCompare,
