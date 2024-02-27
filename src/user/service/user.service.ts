@@ -1,0 +1,61 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../models/user.entity';
+import { Repository } from 'typeorm';
+import { User } from '../models/user.interface';
+import { AuthService } from 'src/auth/services/auth.service';
+
+@Injectable()
+export class UserService {
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    private authService: AuthService,
+  ) {}
+
+  async create(user: User): Promise<User> {
+    const newUser = new UserEntity();
+    newUser.email = user.email;
+    newUser.password = user.password;
+
+    return this.userRepository.save(newUser);
+  }
+
+  async findOne(id: number): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+
+    return result;
+  }
+
+  async login(user: User): Promise<string> {
+    const validatedUser = await this.validateUser(user.email, user.password);
+
+    const jwt = await this.authService.generateJWT(validatedUser);
+
+    return jwt;
+  }
+
+  private async validateUser(
+    email: string,
+    passwordToCompare: string,
+  ): Promise<User> {
+    const user = await this.userRepository.findOneBy({ email });
+
+    const match = this.authService.comparePasswords(
+      passwordToCompare,
+      user.password,
+    );
+
+    if (!match) {
+      throw Error;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+
+    return result;
+  }
+}
