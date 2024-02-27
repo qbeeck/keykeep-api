@@ -16,6 +16,12 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@auth": ["src/auth"],
+      "@card": ["src/card"],
+      "@credential": ["src/credential"],
+      "@user": ["src/user"],
+    }
   }
 }

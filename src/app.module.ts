@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CredentialModule } from './credential/credential.module';
+import { CardModule } from './card/card.module';
 
 @Module({
   imports: [
@@ -18,10 +19,7 @@ import { CredentialModule } from './credential/credential.module';
     UserModule,
     AuthModule,
     CredentialModule,
+    CardModule,
   ],
 })
-export class AppModule {
-  constructor() {
-    console.log(process.env.DATABASE_URL);
-  }
-}
+export class AppModule {}

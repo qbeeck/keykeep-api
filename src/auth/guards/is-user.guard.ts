@@ -5,11 +5,12 @@ import {
   forwardRef,
   ExecutionContext,
 } from '@nestjs/common';
-import { UserService } from 'src/user/service/user.service';
-import { User } from 'src/user/models/user.interface';
+
+import { User } from '../../user/models/user.interface';
+import { UserService } from '../../user/service/user.service';
 
 @Injectable()
-export class UserIsUserGuard implements CanActivate {
+export class IsUserGuard implements CanActivate {
   constructor(
     @Inject(forwardRef(() => UserService))
     private userService: UserService,

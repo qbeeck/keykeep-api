@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { AuthModule } from '../auth/auth.module';
+import { UserModule } from '../user/user.module';
 import { CredentialEntity } from './model/credential.entity';
-import { AuthModule } from 'src/auth/auth.module';
-import { UserModule } from 'src/user/user.module';
 import { CredentialController } from './controller/credential.controller';
 import { CredentialService } from './service/credential.service';
 

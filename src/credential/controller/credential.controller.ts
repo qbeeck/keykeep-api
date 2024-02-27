@@ -7,7 +7,8 @@ import {
   Get,
   Param,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
+
+import { JwtAuthGuard } from '../../auth/guards/jwt-guard';
 import { CredentialService } from '../service/credential.service';
 import { Credential } from '../model/credential.interface';
 
