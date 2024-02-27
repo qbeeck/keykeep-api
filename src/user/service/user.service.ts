@@ -18,7 +18,12 @@ export class UserService {
     newUser.email = user.email;
     newUser.password = user.password;
 
-    return this.userRepository.save(newUser);
+    const createdUser = await this.userRepository.save(newUser);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = createdUser;
+
+    return result;
   }
 
   async findOne(id: number): Promise<User> {
