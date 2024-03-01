@@ -9,10 +9,10 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Post()
-  async create(@Body() user: User): Promise<User> {
-    const createdUser = await this.userService.create(user);
+  async create(@Body() user: User): Promise<boolean> {
+    await this.userService.create(user);
 
-    return createdUser;
+    return true;
   }
 
   @Post('login')

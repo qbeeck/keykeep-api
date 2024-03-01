@@ -14,17 +14,12 @@ export class UserService {
     private authService: AuthService,
   ) {}
 
-  async create(user: User): Promise<User> {
+  async create(user: User): Promise<void> {
     const newUser = new UserEntity();
     newUser.email = user.email;
     newUser.password = user.password;
 
-    const createdUser = await this.userRepository.save(newUser);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = createdUser;
-
-    return result;
+    await this.userRepository.save(newUser);
   }
 
   async findOne(id: number): Promise<User> {
