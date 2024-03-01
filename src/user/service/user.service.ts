@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -53,13 +53,23 @@ export class UserService {
       select: ['id', 'email', 'password'],
     });
 
+    if (!user) {
+      throw new HttpException(
+        'Email or password not valid. Please try again.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
     const match = this.authService.comparePasswords(
       passwordToCompare,
       user.password,
     );
 
     if (!match) {
-      throw Error;
+      throw new HttpException(
+        'Email or password not valid. Please try again.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

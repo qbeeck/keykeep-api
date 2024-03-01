@@ -22,6 +22,7 @@ export class CredentialController {
     return this.credentialService.create(req.user, credential);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: number): Promise<Credential> {
     return this.credentialService.findOne(id);
