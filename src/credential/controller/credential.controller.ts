@@ -6,11 +6,15 @@ import {
   UseGuards,
   Get,
   Param,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from '../../auth/guards/jwt-guard';
 import { CredentialService } from '../service/credential.service';
 import { Credential } from '../model/credential.interface';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Controller('credentials')
 export class CredentialController {
@@ -26,5 +30,29 @@ export class CredentialController {
   @Get(':id')
   findOne(@Param('id') id: number): Promise<Credential> {
     return this.credentialService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('')
+  async index(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+  ): Promise<Pagination<Credential>> {
+    limit = limit > 100 ? 100 : limit;
+
+    const { items, meta } = await this.credentialService.paginate({
+      page,
+      limit,
+    });
+
+    return { items, meta };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('password/:id')
+  async getPassword(
+    @Param('id') id: number,
+  ): Promise<{ password: Credential['password'] }> {
+    return this.credentialService.getPassword(id);
   }
 }

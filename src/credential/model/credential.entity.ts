@@ -17,6 +17,9 @@ export class CredentialEntity {
   title: string;
 
   @Column()
+  url: string;
+
+  @Column()
   username: string;
 
   @Column()

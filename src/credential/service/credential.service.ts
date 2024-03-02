@@ -5,6 +5,11 @@ import { Repository } from 'typeorm';
 import { User } from '../../user/models/user.interface';
 import { CredentialEntity } from '../model/credential.entity';
 import { Credential } from '../model/credential.interface';
+import {
+  IPaginationOptions,
+  Pagination,
+  paginate,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class CredentialService {
@@ -32,5 +37,20 @@ export class CredentialService {
     const { id, title, username, password, createdAt, updatedAt } = credential;
 
     return { id, title, username, password, createdAt, updatedAt };
+  }
+
+  // TODO: get paginated credential by user id
+  async paginate(options: IPaginationOptions): Promise<Pagination<Credential>> {
+    return paginate<Credential>(this.credentialRepository, options, {
+      select: ['id', 'title', 'url', 'username', 'createdAt', 'updatedAt'],
+    });
+  }
+
+  async getPassword(
+    requestedId: number,
+  ): Promise<{ password: Credential['password'] }> {
+    const { password } = await this.findOne(requestedId);
+
+    return { password };
   }
 }
