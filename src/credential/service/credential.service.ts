@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -28,28 +28,40 @@ export class CredentialService {
     return { id, title, username, password };
   }
 
-  async findOne(requestedId: number): Promise<Credential> {
+  async findOne(requestedId: number, userId: number): Promise<Credential> {
     const credential = await this.credentialRepository.findOne({
       where: { id: requestedId },
       relations: ['user'],
     });
 
-    const { id, title, username, password, createdAt, updatedAt } = credential;
+    const { id, title, username, password, createdAt, updatedAt, user } =
+      credential;
+
+    if (user.id !== userId) {
+      throw new HttpException(
+        'Not found such credential',
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
     return { id, title, username, password, createdAt, updatedAt };
   }
 
-  // TODO: get paginated credential by user id
-  async paginate(options: IPaginationOptions): Promise<Pagination<Credential>> {
+  async paginate(
+    options: IPaginationOptions,
+    userId: number,
+  ): Promise<Pagination<Credential>> {
     return paginate<Credential>(this.credentialRepository, options, {
       select: ['id', 'title', 'url', 'username', 'createdAt', 'updatedAt'],
+      where: [{ user: { id: userId } }],
     });
   }
 
   async getPassword(
     requestedId: number,
+    userId: number,
   ): Promise<{ password: Credential['password'] }> {
-    const { password } = await this.findOne(requestedId);
+    const { password } = await this.findOne(requestedId, userId);
 
     return { password };
   }
