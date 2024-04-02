@@ -6,6 +6,9 @@ import {
   Param,
   Request,
   UseGuards,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '@auth';
 
@@ -34,5 +37,25 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async findOne(@Param() params): Promise<User> {
     return this.userService.findOne(params.id);
+  }
+
+  @Get('')
+  @UseGuards(JwtAuthGuard)
+  async index(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+    @Request() req,
+  ): Promise<User[]> {
+    limit = limit > 100 ? 100 : limit;
+
+    const { items } = await this.userService.paginate(
+      {
+        page,
+        limit,
+      },
+      req.user.id,
+    );
+
+    return items;
   }
 }

@@ -1,10 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 
 import { AuthService } from '../../auth/services/auth.service';
 import { UserEntity } from '../models/user.entity';
 import { User } from '../models/user.interface';
+import {
+  IPaginationOptions,
+  Pagination,
+  paginate,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class UserService {
@@ -18,6 +23,7 @@ export class UserService {
     const newUser = new UserEntity();
     newUser.email = user.email;
     newUser.password = user.password;
+    newUser.publicKeyRSA = user.publicKeyRSA;
 
     await this.userRepository.save(newUser);
   }
@@ -37,6 +43,16 @@ export class UserService {
     const jwt = await this.authService.generateJWT(validatedUser);
 
     return jwt;
+  }
+
+  async paginate(
+    options: IPaginationOptions,
+    userId: number,
+  ): Promise<Pagination<User>> {
+    return paginate<User>(this.userRepository, options, {
+      select: ['id', 'email', 'publicKeyRSA'],
+      where: { id: Not(userId) },
+    });
   }
 
   private async validateUser(

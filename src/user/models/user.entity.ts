@@ -20,6 +20,9 @@ export class UserEntity {
   @Column({ select: false })
   password: string;
 
+  @Column({ select: false })
+  publicKeyRSA: string;
+
   @OneToMany(() => CredentialEntity, (credential) => credential.user)
   credentials: CredentialEntity[];
 
