@@ -1,3 +1,4 @@
+import { Group } from 'src/group';
 import { User } from '../../user/models/user.interface';
 
 export interface Credential {
@@ -10,4 +11,5 @@ export interface Credential {
   createdAt?: Date;
   updatedAt?: Date;
   user?: User;
+  group?: Group;
 }

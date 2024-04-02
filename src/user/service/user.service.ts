@@ -61,6 +61,16 @@ export class UserService {
     });
   }
 
+  async paginateGroup(
+    options: IPaginationOptions,
+    groupId: number,
+  ): Promise<Pagination<User>> {
+    return paginate<User>(this.userRepository, options, {
+      select: ['id', 'email', 'publicKeyRSA'],
+      where: [{ groups: { id: groupId } }],
+    });
+  }
+
   async enrollUserToCourse(userId: number, courseId: number): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id: userId },

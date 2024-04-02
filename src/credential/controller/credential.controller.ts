@@ -51,6 +51,16 @@ export class CredentialController {
     return this.credentialService.createShared(userId, credential);
   }
 
+  @Post('for-group/:userId/:groupId')
+  @UseGuards(JwtAuthGuard)
+  createForGroup(
+    @Body() credential: Credential,
+    @Param('userId') userId: number,
+    @Param('groupId') groupId: number,
+  ): Promise<Credential> {
+    return this.credentialService.createForGroup(userId, credential, groupId);
+  }
+
   @Get('')
   @UseGuards(JwtAuthGuard)
   async index(
@@ -66,6 +76,28 @@ export class CredentialController {
         limit,
       },
       req.user.id,
+    );
+
+    return { items, meta };
+  }
+
+  @Get('for-group/:groupId')
+  @UseGuards(JwtAuthGuard)
+  async forGroup(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+    @Request() req,
+    @Param('groupId') groupId: number,
+  ): Promise<Pagination<Credential>> {
+    limit = limit > 100 ? 100 : limit;
+
+    const { items, meta } = await this.credentialService.paginateForGroup(
+      {
+        page,
+        limit,
+      },
+      req.user.id,
+      groupId,
     );
 
     return { items, meta };

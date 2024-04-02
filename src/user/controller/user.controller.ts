@@ -62,6 +62,26 @@ export class UserController {
     return items;
   }
 
+  @Get('for-group/:groupId')
+  @UseGuards(JwtAuthGuard)
+  async forGroup(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+    @Param('groupId') groupId: number,
+  ): Promise<User[]> {
+    limit = limit > 100 ? 100 : limit;
+
+    const { items } = await this.userService.paginateGroup(
+      {
+        page,
+        limit,
+      },
+      groupId,
+    );
+
+    return items;
+  }
+
   @Put(':id/group')
   @UseGuards(JwtAuthGuard)
   async enrolUserInGroup(

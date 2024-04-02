@@ -16,14 +16,19 @@ import { Group } from '../model/group.interface';
 import { JwtAuthGuard } from '@auth';
 import { Pagination } from 'nestjs-typeorm-paginate';
 
+interface CreateGroupDTO {
+  name: string;
+  userIds: number[];
+}
+
 @Controller('groups')
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async createGroup(@Body() group: Group, @Req() req): Promise<Group> {
-    return this.groupService.create(group.name, req.user.id);
+  async createGroup(@Body() dto: CreateGroupDTO, @Req() req): Promise<Group> {
+    return this.groupService.create(dto.name, dto.userIds, req.user.id);
   }
 
   @Get()

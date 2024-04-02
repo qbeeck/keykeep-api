@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 
 import { User } from '../../user/models/user.interface';
 import { CredentialEntity } from '../model/credential.entity';
@@ -46,6 +46,24 @@ export class CredentialService {
 
     credential.user = user;
     credential.isShared = true;
+
+    const createdCredential = await this.credentialRepository.save(credential);
+
+    const { id, title, username, password } = createdCredential;
+
+    return { id, title, username, password };
+  }
+
+  async createForGroup(
+    userId: number,
+    credential: Credential,
+    groupId: number,
+  ): Promise<Credential> {
+    const user = await this.userService.findOne(userId);
+
+    credential.user = user;
+    credential.isShared = true;
+    credential.group = { id: groupId };
 
     const createdCredential = await this.credentialRepository.save(credential);
 
@@ -106,7 +124,27 @@ export class CredentialService {
         'createdAt',
         'updatedAt',
       ],
-      where: [{ user: { id: userId } }],
+      where: [{ user: { id: userId }, group: IsNull() }],
+    });
+  }
+
+  async paginateForGroup(
+    options: IPaginationOptions,
+    userId: number,
+    groupId: number,
+  ): Promise<Pagination<Credential>> {
+    return paginate<Credential>(this.credentialRepository, options, {
+      select: [
+        'id',
+        'title',
+        'url',
+        'username',
+        'password',
+        'isShared',
+        'createdAt',
+        'updatedAt',
+      ],
+      where: [{ user: { id: userId }, group: { id: groupId } }],
     });
   }
 

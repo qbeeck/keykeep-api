@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 import { UserEntity } from '../../user/models/user.entity';
+import { GroupEntity } from 'src/group';
 
 @Entity('credential_entity')
 export class CredentialEntity {
@@ -36,6 +37,9 @@ export class CredentialEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.credentials)
   user: UserEntity;
+
+  @ManyToOne(() => GroupEntity, (group) => group.credentials)
+  group: GroupEntity;
 
   @BeforeUpdate()
   updateTimestamp() {

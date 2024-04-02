@@ -17,10 +17,14 @@ export class GroupService {
     private readonly groupRepository: Repository<GroupEntity>,
   ) {}
 
-  async create(name: string, userId: number): Promise<Group> {
+  async create(
+    name: string,
+    userIds: number[],
+    userId: number,
+  ): Promise<Group> {
     const group = this.groupRepository.create({
       name,
-      users: [{ id: userId }],
+      users: [{ id: userId }, ...userIds.map((id) => ({ id }))],
     });
 
     return this.groupRepository.save(group);
