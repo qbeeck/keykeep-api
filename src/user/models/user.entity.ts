@@ -4,10 +4,13 @@ import {
   Column,
   BeforeInsert,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 import { CredentialEntity } from '../../credential/model/credential.entity';
 import { CardEntity } from '../../card/model/card.entity';
+import { GroupEntity } from '../../group/model/group.entity';
 
 @Entity()
 export class UserEntity {
@@ -28,6 +31,10 @@ export class UserEntity {
 
   @OneToMany(() => CardEntity, (card) => card.user)
   cards: CardEntity[];
+
+  @ManyToMany(() => GroupEntity, (group) => group.users)
+  @JoinTable()
+  groups: GroupEntity[];
 
   @BeforeInsert()
   emailToLowerCase() {

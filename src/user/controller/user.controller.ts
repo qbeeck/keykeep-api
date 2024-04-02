@@ -9,6 +9,7 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '@auth';
 
@@ -59,5 +60,22 @@ export class UserController {
     );
 
     return items;
+  }
+
+  @Put(':id/group')
+  @UseGuards(JwtAuthGuard)
+  async enrolUserInGroup(
+    @Param('id') id: string,
+    @Body() body: { group: number },
+  ): Promise<User> {
+    const studentId = +id;
+    const courseId = body.group;
+
+    const updatedStudent = await this.userService.enrollUserToCourse(
+      studentId,
+      courseId,
+    );
+
+    return updatedStudent;
   }
 }

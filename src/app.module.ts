@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CredentialModule } from './credential/credential.module';
 import { CardModule } from './card/card.module';
+import { GroupModule } from './group';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CardModule } from './card/card.module';
     AuthModule,
     CredentialModule,
     CardModule,
+    GroupModule,
   ],
 })
 export class AppModule {}

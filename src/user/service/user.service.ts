@@ -10,12 +10,15 @@ import {
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
+import { GroupEntity } from 'src/group';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(GroupEntity)
+    private readonly groupRepository: Repository<GroupEntity>,
     private authService: AuthService,
   ) {}
 
@@ -56,6 +59,27 @@ export class UserService {
         },
       ],
     });
+  }
+
+  async enrollUserToCourse(userId: number, courseId: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['groups'],
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const group = await this.groupRepository.findOneBy({ id: courseId }); // Fetch courses by IDs
+
+    if (!group) {
+      throw new Error('No group found with the provided ID');
+    }
+
+    user.groups = [...user.groups, group]; // Assign fetched courses to the student
+
+    return this.userRepository.save(user); // Save the updated student
   }
 
   private async validateUser(

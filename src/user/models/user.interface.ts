@@ -1,3 +1,4 @@
+import { Group } from 'src/group';
 import { Card } from '../../card/model/card.interface';
 import { Credential } from '../../credential/model/credential.interface';
 
@@ -8,4 +9,5 @@ export interface User {
   publicKeyRSA?: string;
   credentials?: Credential[];
   cards?: Card[];
+  groups?: Group[];
 }
