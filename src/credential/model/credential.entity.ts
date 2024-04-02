@@ -25,6 +25,9 @@ export class CredentialEntity {
   @Column()
   password: string;
 
+  @Column({ default: false })
+  isShared: boolean;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 

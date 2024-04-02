@@ -10,16 +10,42 @@ import {
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
+import { UserService } from '@user';
 
 @Injectable()
 export class CredentialService {
   constructor(
     @InjectRepository(CredentialEntity)
     private readonly credentialRepository: Repository<CredentialEntity>,
+    private readonly userService: UserService,
   ) {}
 
   async create(user: User, credential: Credential): Promise<Credential> {
     credential.user = user;
+
+    const createdCredential = await this.credentialRepository.save(credential);
+
+    const { id, title, username, password } = createdCredential;
+
+    return { id, title, username, password };
+  }
+
+  async removeOne(credentialId: number, userId: number): Promise<boolean> {
+    const credential = await this.findOne(credentialId, userId);
+
+    await this.credentialRepository.delete(credential.id);
+
+    return true;
+  }
+
+  async createShared(
+    userId: number,
+    credential: Credential,
+  ): Promise<Credential> {
+    const user = await this.userService.findOne(userId);
+
+    credential.user = user;
+    credential.isShared = true;
 
     const createdCredential = await this.credentialRepository.save(credential);
 
@@ -34,8 +60,17 @@ export class CredentialService {
       relations: ['user'],
     });
 
-    const { id, title, username, password, createdAt, updatedAt, user } =
-      credential;
+    const {
+      id,
+      title,
+      url,
+      isShared,
+      username,
+      password,
+      createdAt,
+      updatedAt,
+      user,
+    } = credential;
 
     if (user.id !== userId) {
       throw new HttpException(
@@ -44,7 +79,16 @@ export class CredentialService {
       );
     }
 
-    return { id, title, username, password, createdAt, updatedAt };
+    return {
+      id,
+      title,
+      url,
+      username,
+      isShared,
+      password,
+      createdAt,
+      updatedAt,
+    };
   }
 
   async paginate(
@@ -52,7 +96,16 @@ export class CredentialService {
     userId: number,
   ): Promise<Pagination<Credential>> {
     return paginate<Credential>(this.credentialRepository, options, {
-      select: ['id', 'title', 'url', 'username', 'createdAt', 'updatedAt'],
+      select: [
+        'id',
+        'title',
+        'url',
+        'username',
+        'password',
+        'isShared',
+        'createdAt',
+        'updatedAt',
+      ],
       where: [{ user: { id: userId } }],
     });
   }
@@ -60,9 +113,9 @@ export class CredentialService {
   async getPassword(
     requestedId: number,
     userId: number,
-  ): Promise<{ password: Credential['password'] }> {
-    const { password } = await this.findOne(requestedId, userId);
+  ): Promise<{ password: string; isShared: boolean }> {
+    const { password, isShared } = await this.findOne(requestedId, userId);
 
-    return { password };
+    return { password, isShared };
   }
 }

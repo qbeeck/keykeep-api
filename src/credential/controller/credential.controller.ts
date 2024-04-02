@@ -5,6 +5,7 @@ import {
   Request,
   UseGuards,
   Get,
+  Delete,
   Param,
   Query,
   DefaultValuePipe,
@@ -24,6 +25,30 @@ export class CredentialController {
   @UseGuards(JwtAuthGuard)
   create(@Body() credential: Credential, @Request() req): Promise<Credential> {
     return this.credentialService.create(req.user, credential);
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async getOne(@Param('id') id: number, @Request() req): Promise<Credential> {
+    return this.credentialService.findOne(id, req.user.id);
+  }
+
+  @Delete('password/:id')
+  @UseGuards(JwtAuthGuard)
+  removeOne(
+    @Param('id') credentialId: number,
+    @Request() req,
+  ): Promise<boolean> {
+    return this.credentialService.removeOne(credentialId, req.user.id);
+  }
+
+  @Post('shared/:userId')
+  @UseGuards(JwtAuthGuard)
+  createShared(
+    @Body() credential: Credential,
+    @Param('userId') userId: number,
+  ): Promise<Credential> {
+    return this.credentialService.createShared(userId, credential);
   }
 
   @Get('')
@@ -51,7 +76,7 @@ export class CredentialController {
   async getPassword(
     @Param('id') id: number,
     @Request() req,
-  ): Promise<{ password: Credential['password'] }> {
+  ): Promise<{ password: Credential['password']; isShared: boolean }> {
     return this.credentialService.getPassword(id, req.user.id);
   }
 }

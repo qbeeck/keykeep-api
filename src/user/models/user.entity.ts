@@ -20,7 +20,7 @@ export class UserEntity {
   @Column({ select: false })
   password: string;
 
-  @Column({ select: false })
+  @Column({ select: true })
   publicKeyRSA: string;
 
   @OneToMany(() => CredentialEntity, (credential) => credential.user)

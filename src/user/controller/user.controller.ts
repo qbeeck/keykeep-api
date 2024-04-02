@@ -44,6 +44,7 @@ export class UserController {
   async index(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+    @Query('search', new DefaultValuePipe('')) search: string = '',
     @Request() req,
   ): Promise<User[]> {
     limit = limit > 100 ? 100 : limit;
@@ -54,6 +55,7 @@ export class UserController {
         limit,
       },
       req.user.id,
+      search,
     );
 
     return items;

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 
 import { AuthService } from '../../auth/services/auth.service';
 import { UserEntity } from '../models/user.entity';
@@ -31,10 +31,7 @@ export class UserService {
   async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = user;
-
-    return result;
+    return user;
   }
 
   async login(user: User): Promise<string> {
@@ -48,10 +45,16 @@ export class UserService {
   async paginate(
     options: IPaginationOptions,
     userId: number,
+    searchValue?: string,
   ): Promise<Pagination<User>> {
     return paginate<User>(this.userRepository, options, {
       select: ['id', 'email', 'publicKeyRSA'],
-      where: { id: Not(userId) },
+      where: [
+        {
+          id: Not(userId),
+          ...(searchValue && { email: Like(`%${searchValue}%`) }),
+        },
+      ],
     });
   }
 

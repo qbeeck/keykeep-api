@@ -6,6 +6,7 @@ export interface Credential {
   url?: string;
   username?: string;
   password?: string;
+  isShared?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   user?: User;
