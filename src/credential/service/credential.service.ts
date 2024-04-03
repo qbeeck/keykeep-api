@@ -38,6 +38,25 @@ export class CredentialService {
     return true;
   }
 
+  async updateCredential(
+    id: number,
+    updateCredential: Credential,
+  ): Promise<Credential> {
+    const credential = await this.credentialRepository.findOneBy({ id });
+
+    if (!credential) {
+      throw new Error('Credential not found');
+    }
+
+    credential.title = updateCredential.title;
+    credential.url = updateCredential.url;
+    credential.username = updateCredential.username;
+    credential.password = updateCredential.password;
+    credential.isShared = updateCredential.isShared;
+
+    return await this.credentialRepository.save(credential);
+  }
+
   async createShared(
     userId: number,
     credential: Credential,

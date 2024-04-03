@@ -10,6 +10,7 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from '../../auth/guards/jwt-guard';
@@ -31,6 +32,17 @@ export class CredentialController {
   @UseGuards(JwtAuthGuard)
   async getOne(@Param('id') id: number, @Request() req): Promise<Credential> {
     return this.credentialService.findOne(id, req.user.id);
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() updateCredentialDto: Credential,
+  ): Promise<Credential> {
+    return await this.credentialService.updateCredential(
+      id,
+      updateCredentialDto,
+    );
   }
 
   @Delete('password/:id')
