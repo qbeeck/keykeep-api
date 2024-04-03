@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
+import { IsNull, Like, Repository } from 'typeorm';
 
 import { User } from '../../user/models/user.interface';
 import { CredentialEntity } from '../model/credential.entity';
@@ -165,6 +165,14 @@ export class CredentialService {
       ],
       where: [{ user: { id: userId }, group: { id: groupId } }],
     });
+  }
+
+  async all(userId: number): Promise<Credential[]> {
+    const allCredentials = await this.credentialRepository.find({
+      where: [{ user: { id: userId } }],
+    });
+
+    return allCredentials;
   }
 
   async getPassword(

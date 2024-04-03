@@ -11,6 +11,7 @@ import {
   DefaultValuePipe,
   ParseIntPipe,
   Put,
+  Req,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from '../../auth/guards/jwt-guard';
@@ -113,6 +114,14 @@ export class CredentialController {
     );
 
     return { items, meta };
+  }
+
+  @Get('all/:id')
+  @UseGuards(JwtAuthGuard)
+  async all(@Request() req): Promise<Credential[]> {
+    const credentials = await this.credentialService.all(req.user.id);
+
+    return credentials;
   }
 
   @Get('password/:id')
